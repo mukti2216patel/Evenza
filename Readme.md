@@ -305,26 +305,3 @@ Any unmatched path redirects to `/`.
 | Google People API | Importing guest contacts | Active (client-side OAuth token flow) |
 | Twilio | WhatsApp invitations | Imported and configured, but the controller and route are commented out |
 
----
-
-## Known Issues / Roadmap
-
-These are worth addressing before deploying:
-
-1. **`node_modules` is committed to the repository** (~226 MB). Add a root `.gitignore` with `node_modules/`, `.env` and `.idea/`, then `git rm -r --cached node_modules`.
-2. **Hardcoded API base URL.** `http://localhost:8080` appears ~44 times across the client. Move it to a `VITE_API_URL` environment variable and a shared Axios instance.
-3. **Hardcoded Google OAuth client ID** in `GuestManagement.jsx` — should come from `import.meta.env`.
-4. **Auth header format.** The middleware reads `req.headers.authorization` and passes it straight to `jwt.verify`, so the token must be sent *without* the `Bearer ` prefix. Standardising on `Bearer <token>` (and stripping it server-side) would be safer.
-5. **Login email validation is inconsistent** — the login schema requires an email of at least 15 characters, while signup allows 5. Short emails can register but not log in.
-6. **bcrypt salt rounds set to 5** in `helper/authHelper.js`; 10–12 is the usual recommendation.
-7. **Two auth collections.** Users and vendors live in separate collections with separate login endpoints; email uniqueness isn't enforced across both.
-8. **CORS is fully open** (`app.use(cors())`) — lock it down to the frontend origin in production.
-9. **`node` listed as an npm dependency** in `server/package.json` — this should be a `engines` field, not a package.
-10. **`.idea/` IDE config is tracked** in version control.
-11. **No test suite and no CI** configured.
-12. **JWTs expire in 1 hour** with no refresh flow, so users are silently logged out mid-session.
-
----
-## License
-
-No license file is currently present in the repository. Consider adding one (MIT is a common choice) to clarify how others may use the code.
